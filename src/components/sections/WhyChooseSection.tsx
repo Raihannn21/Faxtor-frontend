@@ -1,4 +1,3 @@
-import { Card } from '@/components/ui/Card';
 import { ProcessedFeature } from '@/lib/types';
 import { classNames } from '@/lib/utils';
 import Image from 'next/image';
@@ -10,34 +9,56 @@ interface WhyChooseSectionProps {
   images: string[];
 }
 
-function FeatureCard({ feature }: { feature: ProcessedFeature }) {
+interface FeatureCardProps {
+  feature: ProcessedFeature;
+  index: number;
+}
+
+interface ImageGalleryProps {
+  images: string[];
+}
+
+/**
+ * Individual Feature Card Component
+ * Reusable component for displaying feature with icon, title and description
+ */
+function FeatureCard({ feature, index }: FeatureCardProps) {
   return (
-    <Card className="text-center h-full">
-      <div className="flex flex-col items-center h-full">
-        {/* Feature Icon */}
-        {feature.icon && (
-          <div className="w-16 h-16 mb-4 flex-shrink-0">
-            <Image
-              src={feature.icon}
-              alt={feature.title}
-              width={64}
-              height={64}
-              className="w-full h-full object-contain"
+    <div 
+      className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+      style={{
+        animationDelay: `${index * 100}ms`
+      }}
+    >
+      <div className="flex items-start space-x-4">
+        {/* Shield Icon */}
+        <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+          <svg 
+            className="w-6 h-6 text-gray-700" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" 
             />
-          </div>
-        )}
+          </svg>
+        </div>
 
-        {/* Feature Title */}
-        <h3 className="text-lg font-semibold mb-3 text-gray-900">
-          {feature.title}
-        </h3>
-
-        {/* Feature Description */}
-        <p className="text-gray-600 text-sm leading-relaxed flex-grow">
-          {feature.description}
-        </p>
+        {/* Feature Content */}
+        <div className="flex-1 min-w-0">
+          <h3 className="text-lg font-bold text-gray-900 mb-2">
+            {feature.title}
+          </h3>
+          <p className="text-gray-600 text-sm leading-relaxed">
+            {feature.description}
+          </p>
+        </div>
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -45,14 +66,14 @@ function ImageCollage({ images }: { images: string[] }) {
   if (images.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-2 gap-4 h-full">
-      {images.slice(0, 4).map((image, index) => (
+    <div className="flex justify-center lg:justify-start gap-4">
+      {images.slice(0, 3).map((image, index) => (
         <div 
           key={index} 
-          className={classNames(
-            "relative rounded-lg overflow-hidden",
-            index === 0 ? "row-span-2" : "aspect-square"
-          )}
+          className="relative w-32 h-80 lg:w-36 lg:h-96 rounded-3xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300"
+          style={{
+            transform: `translateY(${index * 20}px) rotate(${(index - 1) * 3}deg)`,
+          }}
         >
           <Image
             src={image}
@@ -68,34 +89,39 @@ function ImageCollage({ images }: { images: string[] }) {
 
 export function WhyChooseSection({ title, subtitle, features, images }: WhyChooseSectionProps) {
   return (
-    <section className="py-16 lg:py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-16 lg:py-24 bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="w-full h-full bg-white bg-opacity-5 backdrop-blur-3xl"></div>
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
             {title}
           </h2>
           
           {subtitle && (
-            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl text-blue-200 max-w-3xl mx-auto">
               {subtitle}
             </p>
           )}
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Features Grid */}
-          <div className="grid sm:grid-cols-2 gap-6">
-            {features.map((feature, index) => (
-              <div key={index}>
-                <FeatureCard feature={feature} />
-              </div>
-            ))}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          {/* Image Collage - Left Side */}
+          <div className="flex justify-center lg:justify-start">
+            <div className="w-full max-w-md">
+              <ImageCollage images={images} />
+            </div>
           </div>
 
-          {/* Image Collage */}
-          <div className="h-96 lg:h-[500px]">
-            <ImageCollage images={images} />
+          {/* Features Grid - Right Side */}
+          <div className="space-y-6">
+            {features.map((feature, index) => (
+              <FeatureCard key={index} feature={feature} index={index} />
+            ))}
           </div>
         </div>
       </div>

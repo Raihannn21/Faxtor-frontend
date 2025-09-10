@@ -17,7 +17,14 @@ export function useHomepageData(skip = false) {
   });
 
   // Debug logging
-
+  if (data?.page?.homepageOptions) {
+    console.log('Why Choose Images Debug:', {
+      whyImage1: data.page.homepageOptions.whyImage1,
+      whyImage2: data.page.homepageOptions.whyImage2,
+      whyImage3: data.page.homepageOptions.whyImage3,
+      whyImage4: data.page.homepageOptions.whyImage4,
+    });
+  }
 
   // Process raw data into component-friendly format
   const processedData = data?.page?.homepageOptions ? {
