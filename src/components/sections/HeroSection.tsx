@@ -27,8 +27,12 @@ export function HeroSection({
     // Get YouTube thumbnail for fallback
     const thumbnailUrl = getYouTubeThumbnail(videoUrl || '');
 
-
-
+    // Debug video URLs
+    console.log('🎥 Video Debug:', {
+        original: videoUrl,
+        processed: videoUrl,
+        thumbnail: thumbnailUrl
+    });
 
     return (
         <section className="relative min-h-screen flex items-center overflow-hidden bg-gray-900">
@@ -55,30 +59,80 @@ export function HeroSection({
 
                     </>
                 )}
-                {/* Light overlay for text readability - MUCH lighter */}
-                <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-transparent z-10" />
+                {/* Light overlay for text readability */}
+                <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-transparent z-16" />
             </div>
 
-            {/* Video Background - Only if no background image */}
-            {videoUrl && !backgroundImage && (
-                <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
+            {/* Video Background - Primary */}
+            {videoUrl && (
+                <div className="absolute inset-0 w-full h-full overflow-hidden z-15">
+                    {/* Show iframe only when video should play */}
+                    {isVideoPlaying && (
+                        <iframe
+                            src={videoUrl}
+                            className="absolute inset-0 w-full h-full scale-110"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                            referrerPolicy="strict-origin-when-cross-origin"
+                            allowFullScreen
+                            title="Background Video"
+                            loading="eager"
+                            style={{
+                                border: 'none',
+                                pointerEvents: 'none',
+                            }}
+                            onLoad={() => console.log('✅ Video iframe loaded and playing')}
+                            onError={(e) => console.error('❌ Video iframe error:', e)}
+                        />
+                    )}
+                    
+                    {/* YouTube thumbnail with play button (always visible until clicked) */}
+                    {thumbnailUrl && !isVideoPlaying && (
+                        <div
+                            className="absolute inset-0 w-full h-full bg-cover bg-center z-5 cursor-pointer group"
+                            style={{
+                                backgroundImage: `url(${thumbnailUrl})`
+                            }}
+                            onClick={() => {
+                                console.log('🎬 User clicked play button');
+                                setIsVideoPlaying(true);
+                            }}
+                        >
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                <div className="bg-red-600 rounded-full p-6 group-hover:bg-red-700 transition-all transform group-hover:scale-110 shadow-lg">
+                                    <svg className="w-12 h-12 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            {/* Play text */}
+                            <div className="absolute bottom-8 left-8 text-white">
+                                <p className="text-sm opacity-75 mb-1">Click to play video</p>
+                                <p className="font-semibold">Watch Our Story</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Auto-attempt iframe (hidden, for browsers that support autoplay) */}
                     <iframe
                         src={videoUrl}
-                        className="absolute inset-0 w-full h-full scale-110"
+                        className="absolute inset-0 w-full h-full scale-110 opacity-0 pointer-events-none"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                         referrerPolicy="strict-origin-when-cross-origin"
-                        allowFullScreen
-                        title="Background Video"
-                        style={{
-                            border: 'none',
-                            pointerEvents: 'none',
+                        title="Auto Background Video"
+                        style={{ border: 'none' }}
+                        onLoad={() => {
+                            console.log('🚀 Auto-iframe loaded, checking if playing...');
+                            // After a short delay, hide thumbnail if video is playing
+                            setTimeout(() => {
+                                setIsVideoPlaying(true);
+                            }, 3000);
                         }}
                     />
                 </div>
             )}
 
             {/* Content - Left Aligned */}
-            <div className="relative z-20 h-full flex items-center">
+            <div className="relative z-30 h-full flex items-center">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
                     <div className="flex justify-start">
                         <div className="max-w-2xl text-white">

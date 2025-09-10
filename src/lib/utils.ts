@@ -44,7 +44,7 @@ export function convertYouTubeUrl(url: string): string {
     return url;
   }
   
-  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1&widgetid=1`;
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1&widgetid=1&start=0&end=0&version=3&playerapiid=ytplayer&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`;
   
   return embedUrl;
 }
